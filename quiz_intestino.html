@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protocolo Intestino Saludable</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FAFAF9;
+      color: #14532D;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .page-wrapper {
+      width: 100%;
+      max-width: 520px;
+      min-height: 100vh;
+      border: 2px dashed #ef4444;
+      position: relative;
+      background: #FAFAF9;
+    }
+
+    .quiz-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 12px;
+      min-height: 95vh;
+    }
+
+    /* HEADER */
+    .quiz-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #14532D;
+      padding: 4px 8px;
+      border-radius: 8px;
+      display: none;
+    }
+    .back-btn:hover { background: rgba(34,197,94,0.1); }
+
+    .logo-wrap {
+      width: 96px;
+    }
+    .logo-wrap img { width: 100%; height: auto; display: block; }
+
+    .progress-bar-wrap {
+      width: 100%;
+      max-width: 440px;
+      height: 6px;
+      background: rgba(34,197,94,0.15);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: #22C55E;
+      border-radius: 99px;
+      transition: width 0.7s ease;
+    }
+
+    /* CONTENT */
+    .quiz-content {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-title {
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #14532D;
+      line-height: 1.3;
+    }
+    .quiz-title .highlight {
+      color: #22C55E;
+      text-decoration: underline;
+    }
+    .quiz-title .highlight-red {
+      color: #DC2626;
+    }
+
+    .quiz-subtitle {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #14532D;
+      line-height: 1.4;
+    }
+    .quiz-subtitle .hl { color: #22C55E; text-decoration: underline; }
+
+    .alert-box {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #DC2626;
+      font-weight: 500;
+    }
+
+    .quiz-image {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 3/2;
+    }
+    .quiz-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 16px;
+    }
+
+    /* OPTIONS */
+    .options-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .option-btn {
+      background: rgba(34,197,94,0.05);
+      border: 1px dashed rgba(34,197,94,0.5);
+      border-radius: 15px;
+      cursor: pointer;
+      color: #14532D;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 12px 10px;
+      min-height: 56px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .option-btn:hover, .option-btn.selected {
+      background: rgba(34,197,94,0.15);
+      border-color: #22C55E;
+    }
+
+    /* Option with image (left image + text) */
+    .option-btn-img {
+      background: transparent;
+      border: 1px solid rgba(34,197,94,0.5);
+      border-radius: 15px;
+      cursor: pointer;
+      color: #14532D;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: left;
+      padding: 0;
+      min-height: 64px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      overflow: hidden;
+    }
+    .option-btn-img:hover, .option-btn-img.selected {
+      background: rgba(34,197,94,0.15);
+      border-color: #22C55E;
+    }
+    .option-btn-img .opt-img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .option-btn-img .opt-text {
+      padding: 8px 12px;
+      flex: 1;
+    }
+
+    /* Option with image on right (silhouette) */
+    .option-btn-silhouette {
+      background: transparent;
+      border: 1px solid rgba(34,197,94,0.5);
+      border-radius: 15px;
+      cursor: pointer;
+      color: #14532D;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: left;
+      padding: 0;
+      min-height: 64px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      overflow: hidden;
+    }
+    .option-btn-silhouette:hover, .option-btn-silhouette.selected {
+      background: rgba(34,197,94,0.15);
+      border-color: #22C55E;
+    }
+    .option-btn-silhouette .opt-text {
+      padding: 8px 12px;
+      flex: 1;
+    }
+    .option-btn-silhouette .opt-img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /* Option with arrow */
+    .option-btn-arrow {
+      background: rgba(34,197,94,0.05);
+      border: 1px dashed rgba(34,197,94,0.5);
+      border-radius: 15px;
+      cursor: pointer;
+      color: #14532D;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 16px;
+      min-height: 56px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 8px;
+    }
+    .option-btn-arrow:hover, .option-btn-arrow.selected {
+      background: rgba(34,197,94,0.2);
+      border-color: #22C55E;
+    }
+    .option-btn-arrow .arrow { color: #22C55E; font-size: 1.1rem; }
+
+    /* Checkbox option */
+    .option-checkbox {
+      background: transparent;
+      border: 1px solid rgba(34,197,94,0.5);
+      border-radius: 15px;
+      cursor: pointer;
+      color: #14532D;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: left;
+      padding: 0;
+      min-height: 56px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      overflow: hidden;
+      gap: 0;
+    }
+    .option-checkbox:hover, .option-checkbox.selected {
+      background: rgba(34,197,94,0.15);
+      border-color: #22C55E;
+    }
+    .option-checkbox .check-box {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(34,197,94,0.6);
+      border-radius: 4px;
+      margin: 0 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+      background: transparent;
+    }
+    .option-checkbox.selected .check-box {
+      background: #22C55E;
+      border-color: #22C55E;
+    }
+    .option-checkbox .opt-text {
+      padding: 12px 12px 12px 0;
+      flex: 1;
+    }
+
+    /* Checkbox with image */
+    .option-checkbox-img {
+      background: transparent;
+      border: 1px solid rgba(34,197,94,0.5);
+      border-radius: 15px;
+      cursor: pointer;
+      color: #14532D;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: left;
+      padding: 0;
+      min-height: 64px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      overflow: hidden;
+    }
+    .option-checkbox-img:hover, .option-checkbox-img.selected {
+      background: rgba(34,197,94,0.15);
+      border-color: #22C55E;
+    }
+    .option-checkbox-img .opt-img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .option-checkbox-img .opt-text {
+      padding: 8px 12px;
+      flex: 1;
+    }
+    .option-checkbox-img .check-box {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(34,197,94,0.6);
+      border-radius: 4px;
+      margin: 0 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+      background: transparent;
+    }
+    .option-checkbox-img.selected .check-box {
+      background: #22C55E;
+      border-color: #22C55E;
+    }
+
+    /* Option card with image grid (2x2) */
+    .option-card {
+      background: transparent;
+      border: 1px dashed rgba(34,197,94,0.6);
+      border-radius: 15px;
+      cursor: pointer;
+      color: #14532D;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 0 0 8px 0;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+    .option-card:hover, .option-card.selected {
+      background: rgba(34,197,94,0.15);
+      border-color: #22C55E;
+    }
+    .option-card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 14px 14px 0 0;
+      margin-bottom: 6px;
+    }
+
+    /* CTA Button */
+    .cta-btn {
+      background: #22C55E;
+      color: white;
+      border: 1px dashed rgba(255,255,255,0.5);
+      border-radius: 15px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 16px 20px;
+      width: 100%;
+      transition: all 0.2s;
+    }
+    .cta-btn:hover { background: #16a34a; }
+
+    /* Input field */
+    .quiz-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px dashed #ef4444;
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      color: #14532D;
+      background: white;
+      outline: none;
+    }
+    .quiz-input:focus { border-color: #22C55E; }
+
+    /* Info card */
+    .info-card {
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      color: #14532D;
+      line-height: 1.5;
+    }
+
+    /* Alert card */
+    .alert-card {
+      background: rgba(220,38,38,0.08);
+      border: 1px solid rgba(220,38,38,0.3);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      color: #DC2626;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    /* Stats cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .stat-card {
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .stat-card.red { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.2); }
+    .stat-card.yellow { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.2); }
+    .stat-card.green { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); }
+
+    .stat-bar-wrap {
+      width: 40px;
+      height: 60px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .stat-bar {
+      width: 28px;
+      border-radius: 4px 4px 0 0;
+    }
+    .stat-bar.red { background: #ef4444; }
+    .stat-bar.yellow { background: #eab308; }
+    .stat-bar.green { background: #22C55E; }
+
+    .stat-pct {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .stat-pct.red { color: #DC2626; }
+    .stat-pct.yellow { color: #b45309; }
+    .stat-pct.green { color: #15803D; }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #14532D;
+      line-height: 1.3;
+    }
+    .stat-sublabel {
+      font-size: 0.7rem;
+      color: #6b7280;
+      line-height: 1.3;
+    }
+    .stat-sublabel.red { color: #DC2626; }
+
+    /* Result card */
+    .result-card {
+      border: 2px dashed #eab308;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .result-card .result-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .result-card .result-text { font-size: 0.9rem; font-weight: 600; color: #14532D; }
+    .result-card .result-highlight { color: #22C55E; font-size: 1rem; font-weight: 700; }
+
+    /* Comparison table image */
+    .comparison-img {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .comparison-img img { width: 100%; display: block; }
+
+    /* Testimonial card */
+    .testimonial-card {
+      background: #1a1a2e;
+      border-radius: 16px;
+      overflow: hidden;
+      padding: 16px;
+      color: white;
+    }
+    .testimonial-card .test-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: white;
+      text-align: center;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .testimonial-card .test-img {
+      width: 160px;
+      border-radius: 12px;
+      display: block;
+      margin: 0 auto 12px;
+    }
+    .chat-bubble {
+      background: rgba(255,255,255,0.12);
+      border-radius: 12px 12px 12px 4px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: white;
+      margin-bottom: 8px;
+      line-height: 1.4;
+      max-width: 90%;
+    }
+
+    /* WhatsApp style testimonial */
+    .whatsapp-card {
+      background: #0d1117;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .whatsapp-header {
+      background: #1f2937;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .whatsapp-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .whatsapp-name { font-size: 0.9rem; font-weight: 600; color: white; }
+    .whatsapp-status { font-size: 0.75rem; color: #9ca3af; }
+    .whatsapp-body { padding: 12px 14px; }
+    .whatsapp-img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .whatsapp-msg {
+      background: #1f2937;
+      border-radius: 12px 12px 12px 4px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: white;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .whatsapp-time { font-size: 0.7rem; color: #6b7280; text-align: right; }
+
+    /* Expert card */
+    .expert-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .expert-img {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .expert-img img { width: 100%; display: block; }
+    .expert-text {
+      font-size: 0.9rem;
+      color: #14532D;
+      line-height: 1.6;
+    }
+
+    /* Media logos */
+    .media-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .media-logos img { width: 100%; max-width: 440px; display: block; }
+
+    /* Video container */
+    .video-wrap {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .video-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Live counter */
+    .live-counter {
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #DC2626;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      background: #DC2626;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* VSL title */
+    .vsl-title {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #14532D;
+      line-height: 1.3;
+    }
+
+    /* Step hidden/visible */
+    .step { display: none; }
+    .step.active { display: flex; flex-direction: column; gap: 12px; }
+
+    /* Transition */
+    .step.fade-in { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Article card */
+    .article-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+    .article-card img { width: 100%; display: block; }
+
+    /* Curcuma text card */
+    .curcuma-card {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #14532D;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    /* Before/after image */
+    .before-after {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .before-after img { width: 100%; display: block; }
+
+    @media (max-width: 480px) {
+      .page-wrapper { max-width: 100%; }
+      .quiz-title { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <div class="quiz-container">
+
+    <!-- BACK BUTTON -->
+    <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
+
+    <!-- HEADER -->
+    <div class="quiz-header">
+      <div class="logo-wrap">
+        <img src="https://media.inlead.cloud/uploads/29956/2025-09-17/md-LM2A6-logo-ia.png" alt="Protocolo Intestino Activo">
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width: 4%"></div>
+      </div>
+    </div>
+
+    <!-- STEPS -->
+    <div id="stepsContainer">
+
+      <!-- STEP 1: Hinchazón -->
+      <div class="step active fade-in" id="step1">
+        <div class="quiz-title">
+          Evaluación <span class="highlight">gratuita</span> de Salud Digestiva:
+        </div>
+        <div class="alert-box">
+          🚨 <strong>Aviso:</strong> ¡Solo <strong>un intento gratuito</strong> por persona!
+        </div>
+        <div class="quiz-title" style="font-size:1.1rem;">
+          ¿Sueles sentirte inflamada después de las comidas?
+        </div>
+        <div class="quiz-image">
+          <img src="https://media.inlead.cloud/uploads/29956/2026-01-15/lg-l7msQ-barriga-inchada.webp" alt="Barriga inflamada">
+        </div>
+        <div class="options-grid-2">
+          <button class="option-btn" onclick="nextStep(2)">✅ Sí</button>
+          <button class="option-btn" onclick="nextStep(2)">🚫 No</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Edad -->
+      <div class="step" id="step2">
+        <div class="quiz-title">¿En qué rango de edad te encuentras?</div>
+        <div class="options-grid-2">
+          <button class="option-card" onclick="nextStep(3)">
+            <img src="https://media.inlead.cloud/uploads/29956/2025-09-17/md-16uAP-13.png" alt="18-25">
+            18 a 25 años
+          </button>
+          <button class="option-card" onclick="nextStep(3)">
+            <img src="https://media.inlead.cloud/uploads/29956/2025-09-17/md-j1FVo-14.png" alt="25-35">
+            25 a 35 años
+          </button>
+          <button class="option-card" onclick="nextStep(3)">
+            <img src="https://media.inlead.cloud/uploads/29956/2025-09-17/md-5ijMu-15.png" alt="36-45">
+            36 a 45 años
+          </button>
+          <button class="option-card" onclick="nextStep(3)">
+            <img src="https://media.inlead.cloud/uploads/29956/2025-09-17/md-3AJDv-16.png" alt="+46">
+            +46 años
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Físico -->
+      <div class="step" id="step3">
+        <div class="quiz-title">¿Cómo describirías tu complexión física?</div>
+        <div class="quiz-subtitle">Por favor, sé honesta, ¡quiero ayudarte!</div>
+        <div class="options-list">
+          <button class="option-btn-silhouette" onclick="nextStep(4)">
+            <span class="opt-text">Delgada</span>
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-07-29/xs-5C5Fg-chatgpt-image-29-de-jul-de-2025-12-50-34-1.png" alt="Delgada">
+          </button>
+          <button class="option-btn-silhouette" onclick="nextStep(4)">
+            <span class="opt-text">Con poca firmeza</span>
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-07-29/xs-TzvBf-chatgpt-image-29-de-jul-de-2025-12-42-59-2.png" alt="Poca firmeza">
+          </button>
+          <button class="option-btn-silhouette" onclick="nextStep(4)">
+            <span class="opt-text">Con algunos kilos de más</span>
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-07-29/xs-6j2y3-chatgpt-image-29-de-jul-de-2025-12-39-06-1.png" alt="Kilos de más">
+          </button>
+          <button class="option-btn-silhouette" onclick="nextStep(4)">
+            <span class="opt-text">Con sobrepeso</span>
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-07-29/xs-7yR50-chatgpt-image-29-de-jul-de-2025-12-45-55-1.png" alt="Sobrepeso">
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Síntomas (checkbox) -->
+      <div class="step" id="step4">
+        <div class="quiz-title">¿Qué molestias o problemas te afectan más en este momento?</div>
+        <div class="quiz-subtitle">Por favor, selecciona una o varias opciones y sé sincera.</div>
+        <div class="options-list" id="symptomsOptions">
+          <button class="option-checkbox" onclick="toggleCheckbox(this)">
+            <span class="check-box"></span>
+            <span class="opt-text">👖 Vientre hinchado e inflamación abdominal</span>
+          </button>
+          <button class="option-checkbox" onclick="toggleCheckbox(this)">
+            <span class="check-box"></span>
+            <span class="opt-text">🔥 Dificultad para perder peso de forma natural</span>
+          </button>
+          <button class="option-checkbox" onclick="toggleCheckbox(this)">
+            <span class="check-box"></span>
+            <span class="opt-text">⚡ Falta de energía y agotamiento constante</span>
+          </button>
+          <button class="option-checkbox" onclick="toggleCheckbox(this)">
+            <span class="check-box"></span>
+            <span class="opt-text">🚽 Estreñimiento frecuente</span>
+          </button>
+          <button class="option-checkbox" onclick="toggleCheckbox(this)">
+            <span class="check-box"></span>
+            <span class="opt-text">🧠 Ansiedad elevada o estrés emocional</span>
+          </button>
+          <button class="option-checkbox" onclick="toggleCheckbox(this)">
+            <span class="check-box"></span>
+            <span class="opt-text">😢 Acné y brotes en la piel</span>
+          </button>
+          <button class="option-checkbox" onclick="toggleCheckbox(this)">
+            <span class="check-box"></span>
+            <span class="opt-text">🦠 Candidiasis recurrente</span>
+          </button>
+          <button class="option-checkbox" onclick="toggleCheckbox(this)">
+            <span class="check-box"></span>
+            <span class="opt-text">👩 Caída excesiva de cabello</span>
+          </button>
+        </div>
+        <button class="cta-btn" onclick="nextStep(5)">Me identifico con estas molestias</button>
+      </div>
+
+      <!-- STEP 5: Hábitos (checkbox) -->
+      <div class="step" id="step5">
+        <div class="quiz-title">Estas son las causas más frecuentes de intestino inflamado, ¿te identificas con alguna?</div>
+        <div class="quiz-subtitle">Selecciona una o más y sé sincera:</div>
+        <div class="options-list" id="habitsOptions">
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/29956/2025-09-17/xs-hLXeb-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-17t172557940.png" alt="Pan">
+            <span class="opt-text">Consumo pan, harinas y ultraprocesados al menos 3 veces al mes</span>
+            <span class="check-box"></span>
+          </button>
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/29956/2025-09-17/xs-1ZyQU-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-17t172628071.png" alt="Refrescos">
+            <span class="opt-text">Tomo bebidas azucaradas o refrescos más de 3 veces por semana</span>
+            <span class="check-box"></span>
+          </button>
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/29956/2025-09-17/xs-3HVRl-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-17t172704739.png" alt="Frituras">
+            <span class="opt-text">Como frituras o comida rápida 2 o 3 veces al mes o más</span>
+            <span class="check-box"></span>
+          </button>
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/29956/2025-09-17/xs-TzSwb-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-17t172743022.png" alt="Estrés">
+            <span class="opt-text">Vivo con estrés constante y duermo mal casi todas las noches</span>
+            <span class="check-box"></span>
+          </button>
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/29956/2025-09-17/xs-lqamI-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-17t172951082.png" alt="Alcohol">
+            <span class="opt-text">Consumo alcohol con regularidad, casi todos los fines de semana</span>
+            <span class="check-box"></span>
+          </button>
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/29956/2025-09-17/xs-kuxZh-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-17t173027372.png" alt="Sedentarismo">
+            <span class="opt-text">Tengo poco movimiento físico y paso la mayor parte del día sentada</span>
+            <span class="check-box"></span>
+          </button>
+        </div>
+        <button class="cta-btn" onclick="nextStep(6)">Me identifico con estos puntos</button>
+      </div>
+
+      <!-- STEP 6: Intentos anteriores -->
+      <div class="step" id="step6">
+        <div class="quiz-title">¿Has tomado alguna medida para desinflamar tu intestino en los últimos 6 meses?</div>
+        <div class="quiz-subtitle">Con <span class="hl">cambios en tu alimentación, ejercicios o remedios naturales.</span></div>
+        <div class="quiz-subtitle" style="color:#6b7280;">(Elige una opción abajo)</div>
+        <div class="options-list">
+          <button class="option-btn-arrow" onclick="nextStep(7)">
+            <span>😨 No, aún no he hecho nada para desinflamarlo</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(7)">
+            <span>😄 Sí, ya he intentado desinflamarlo</span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 7: Concordancia con el problema -->
+      <div class="step" id="step7">
+        <div class="quiz-title">¿Estás de acuerdo en que, aunque te esfuerces y trates de mantener hábitos más saludables, tu cuerpo siempre vuelve a estar hinchado y con el vientre inflamado?</div>
+        <div class="info-card">
+          En el <strong>96% de los casos</strong> esto ocurre debido al intestino inflamado, que bloquea por completo tu metabolismo e impide que tu cuerpo funcione como debería, provocando hinchazón, cansancio y un aumento de peso inevitable.
+        </div>
+        <div class="quiz-image" style="aspect-ratio: auto;">
+          <img src="https://media.inlead.cloud/uploads/32622/2025-07-24/lg-PCrwb-lg-7348p-lg-s289f-frame-689.webp" alt="Gráfico metabolismo" style="border-radius:12px;">
+        </div>
+        <div class="options-list">
+          <button class="option-btn-arrow" onclick="nextStep(8)">
+            <span>😄 ¡Sí, estoy completamente de acuerdo!</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(8)">
+            <span>😐 Estoy de acuerdo en parte</span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 8: Peso -->
+      <div class="step" id="step8">
+        <div class="quiz-title">¿Cuál es tu peso actual?</div>
+        <div class="quiz-subtitle">Por favor, sé honesta.</div>
+        <input type="text" class="quiz-input" id="weightInput" placeholder="Escribe tu PESO AQUÍ">
+        <button class="cta-btn" onclick="nextStep(9)">Enviar</button>
+      </div>
+
+      <!-- STEP 9: Altura -->
+      <div class="step" id="step9">
+        <div class="quiz-title">¿Cuál es tu estatura?</div>
+        <div class="quiz-subtitle">(Puede ser aproximada)</div>
+        <input type="text" class="quiz-input" id="heightInput" placeholder="Escribe tu estatura aquí (cm)">
+        <button class="cta-btn" onclick="nextStep(10)">Enviar</button>
+      </div>
+
+      <!-- STEP 10: Comparativo -->
+      <div class="step" id="step10">
+        <div class="quiz-title">¿Conoces la diferencia entre los métodos convencionales y el Protocolo Intestino Activo?</div>
+        <div class="quiz-subtitle">Por favor, sé sincera.</div>
+        <div class="comparison-img">
+          <img src="https://media.inlead.cloud/uploads/29956/2025-09-17/lg-irvl1-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-17t184741355.png" alt="Comparativo">
+        </div>
+        <div class="options-list">
+          <button class="option-btn-arrow" onclick="nextStep(11)">
+            <span>😁 Sí, entendí que el Protocolo Intestino Activo es mucho más eficaz</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(11)">
+            <span>🤔 No me importa este tema</span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 11: Riesgos medicamentos -->
+      <div class="step" id="step11">
+        <div class="quiz-title">¿Eres consciente de los riesgos de los medicamentos tradicionales para el intestino?</div>
+        <div class="quiz-subtitle">(Por favor, sé sincera.)</div>
+        <div class="article-card">
+          <img src="https://media.inlead.cloud/uploads/29956/2025-09-17/lg-PxXsA-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-17t191635388.png" alt="Artículo Marie Claire">
+        </div>
+        <div class="options-list">
+          <button class="option-btn-arrow" onclick="nextStep(12)">
+            <span>😢 ¡No lo sabía!</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(12)">
+            <span>😰 ¡Imaginaba que podían tener efectos secundarios!</span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 12: Interés en el protocolo -->
+      <div class="step" id="step12">
+        <div class="quiz-title">¿Te gustaría recibir un protocolo personalizado para desinflamar tu intestino en tan solo 7 días?</div>
+        <div class="quiz-subtitle">Elige una opción abajo:</div>
+        <div class="quiz-image" style="aspect-ratio: auto;">
+          <img src="https://media.inlead.cloud/uploads/29956/2025-09-20/lg-YOGzL-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-20t133905923.png" alt="Transformación" style="border-radius:12px;">
+        </div>
+        <div class="options-list">
+          <button class="option-btn-arrow" onclick="nextStep(13)">
+            <span>😍 ¡Sí, tengo mucho interés!</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(13)">
+            <span>😅 Tengo interés, pero primero necesito aclarar algunas dudas.</span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 13: Mejor momento -->
+      <div class="step" id="step13">
+        <div class="quiz-title">¿Cuál es el mejor momento del día para dedicar 5 minutos a tu rutina de desinflamación durante los próximos 7 días?</div>
+        <div class="quiz-subtitle">(Recuerda: siempre podrás ajustarlo durante el proceso)</div>
+        <div class="options-list">
+          <button class="option-btn-arrow" onclick="nextStep(14)">
+            <span>☀️ Mañana</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(14)">
+            <span>🌆 Tarde</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(14)">
+            <span>🌙 Noche</span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 14: Especialista -->
+      <div class="step" id="step14">
+        <div class="quiz-title">Tu protocolo será elaborado por Sofía Martínez – Creadora del Protocolo Natural Intestino Activo</div>
+        <div class="expert-card">
+          <div class="expert-img">
+            <img src="https://media.inlead.cloud/uploads/29956/2025-09-12/lg-Dki8p-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-12t043454222.png" alt="Sofía Martínez">
+          </div>
+          <div class="expert-text">
+            Sofía Martínez es <strong>Especialista en Salud Intestinal</strong> por la Universidad Nacional Autónoma de México (UNAM), con investigaciones publicadas en la revista <em>Salud Pública de México</em>, donde demuestra cómo la inflamación intestinal impacta directamente en la energía, el metabolismo y el bienestar de las personas.
+          </div>
+          <div class="expert-text">
+            Además, posee una <strong>maestría en Stanford University</strong>, en Estados Unidos, donde profundizó sus estudios sobre microbiota y metabolismo.
+          </div>
+        </div>
+        <button class="cta-btn" onclick="nextStep(15)">Continuar</button>
+      </div>
+
+      <!-- STEP 15: Objetivo corporal -->
+      <div class="step" id="step15">
+        <div class="quiz-title">¿Cuál es tu objetivo corporal?</div>
+        <div class="quiz-subtitle">Por favor, sé sincera.</div>
+        <div class="options-list">
+          <button class="option-btn-silhouette" onclick="nextStep(16)">
+            <span class="opt-text">Ligera y delgada</span>
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-07-29/xs-5C5Fg-chatgpt-image-29-de-jul-de-2025-12-50-34-1.png" alt="Ligera">
+          </button>
+          <button class="option-btn-silhouette" onclick="nextStep(16)">
+            <span class="opt-text">Saludable y con curvas definidas</span>
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-07-29/xs-TzvBf-chatgpt-image-29-de-jul-de-2025-12-42-59-2.png" alt="Curvas">
+          </button>
+          <button class="option-btn-silhouette" onclick="nextStep(16)">
+            <span class="opt-text">Tonificada y sin flacidez</span>
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/29956/2025-09-17/xs-NXzQq-cuuuuuuu.png" alt="Tonificada">
+          </button>
+          <button class="option-btn-silhouette" onclick="nextStep(16)">
+            <span class="opt-text">Marcada y musculosa</span>
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-07-29/xs-78pHw-fisico-atletico-em-traje-esportivo-1.png" alt="Musculosa">
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 16: Áreas del cuerpo -->
+      <div class="step" id="step16">
+        <div class="quiz-title">¿Qué zonas de tu cuerpo quieres trabajar?</div>
+        <div class="options-list" id="areasOptions">
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-08-01/xs-bYXCU-chatgpt-image-1-de-ago-de-2025-12-50-29.png" alt="Barriga">
+            <span class="opt-text">Barriga</span>
+            <span class="check-box"></span>
+          </button>
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-08-01/xs-0JTTw-chatgpt-image-1-de-ago-de-2025-12-55-12.png" alt="Caderas">
+            <span class="opt-text">Caderas y flancos</span>
+            <span class="check-box"></span>
+          </button>
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-08-01/xs-CluPL-flacidez-na-parte-interna-da-coxa.jpg" alt="Muslos">
+            <span class="opt-text">Parte interna de los muslos</span>
+            <span class="check-box"></span>
+          </button>
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-08-01/xs-O0NQF-chatgpt-image-1-de-ago-de-2025-13-02-08.png" alt="Brazos">
+            <span class="opt-text">Brazos</span>
+            <span class="check-box"></span>
+          </button>
+          <button class="option-checkbox-img" onclick="toggleCheckbox(this)">
+            <img class="opt-img" src="https://media.inlead.cloud/uploads/19132/2025-08-01/xs-XpKIw-chatgpt-image-1-de-ago-de-2025-13-04-26-1.png" alt="Rostro">
+            <span class="opt-text">Rostro hinchado</span>
+            <span class="check-box"></span>
+          </button>
+        </div>
+        <button class="cta-btn" onclick="nextStep(17)">Continuar</button>
+      </div>
+
+      <!-- STEP 17: Decisión por el futuro -->
+      <div class="step" id="step17">
+        <div class="quiz-title">¿Estás de acuerdo en que una pequeña decisión hoy puede transformar tu <span class="highlight">futuro más saludable</span>?</div>
+        <div class="quiz-subtitle">Solo vamos a tener conciencia y arrepentimientos cuando seamos mayores.</div>
+        <div class="options-list">
+          <button class="option-btn-arrow" onclick="nextStep(18)">
+            <span>🙂 Sí, estoy completamente de acuerdo</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(18)">
+            <span>😁 Estoy muy de acuerdo, estoy segura de que mi "yo" del futuro me lo va a agradecer</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(18)">
+            <span>😐 No estoy de acuerdo</span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 18: Salud como bien divino -->
+      <div class="step" id="step18">
+        <div class="quiz-title">¿También crees que nuestra salud es el bien más precioso que <span class="highlight">Dios nos ha dado</span>?</div>
+        <div class="options-list">
+          <button class="option-btn-arrow" onclick="nextStep(19)">
+            <span>🙂 Estoy de acuerdo</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(19)">
+            <span>😐 No estoy de acuerdo</span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 19: Creer en el cambio + Testimonio -->
+      <div class="step" id="step19">
+        <div class="quiz-title">¿Crees que tu vida puede transformarse desde hoy?</div>
+        <div class="quiz-subtitle">Creer es parte del proceso, y esos síntomas de hinchazón, ansiedad y dolores <span class="highlight">desaparecerán en pocas horas</span> con nuestro protocolo.</div>
+        <div class="options-list">
+          <button class="option-btn-arrow" onclick="nextStep(20)">
+            <span>😍 ¡Yo creo muchísimo!</span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="option-btn-arrow" onclick="nextStep(20)">
+            <span>😢 ¡Creo muy poco!</span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+        <div class="testimonial-card">
+          <div class="test-title">Ju además de liberarse de la inflamación intestinal y estar mucho más saludable, se está sintiendo bien frente al espejo y súper desinflamadaaa!</div>
+          <img class="test-img" src="https://media.inlead.cloud/uploads/29956/2025-09-18/lg-VeDnl-dep.png" alt="Testimonio Ju">
+          <div class="chat-bubble">Mira cómo me desinflamé!! Estos jeans antes me apretaban por la panza de embarazada!</div>
+          <div class="chat-bubble">Este protocolo es lo maaaaximo</div>
+          <div class="chat-bubble">Ni lo creo</div>
+        </div>
+      </div>
+
+      <!-- STEP 20: Prueba social + CTA -->
+      <div class="step" id="step20">
+        <div class="quiz-title">Más de 30,000 personas recuperaron su salud y autoestima con el Protocolo Intestino Activo 💚</div>
+
+        <!-- WhatsApp 1 -->
+        <div class="whatsapp-card">
+          <div class="whatsapp-header">
+            <img class="whatsapp-avatar" src="https://media.inlead.cloud/uploads/29956/2025-09-12/xs-W8zbj-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-12t044056013.png" alt="Ana">
+            <div>
+              <div class="whatsapp-name">Ana Castillo</div>
+              <div class="whatsapp-status">visto por última vez hoy a las 14:50</div>
+            </div>
+          </div>
+          <div class="whatsapp-body">
+            <img class="whatsapp-img" src="https://media.inlead.cloud/uploads/29956/2025-09-18/lg-s8MAm-dep2.png" alt="Antes después Ana">
+            <div class="whatsapp-msg">Dra, estoy en shock 😳<div class="whatsapp-time">14:44</div></div>
+            <div class="whatsapp-msg">Después del protocolo me convertí en otra persona<div class="whatsapp-time">14:46</div></div>
+            <div class="whatsapp-msg">No sé cómo aguanté tanto tiempo hinchada, sin ánimo para nada. No tengo palabras para agradecerle, ¡que Dios siga bendiciendo inmensamente su trabajo! 🙏 ❤️<div class="whatsapp-time">14:46</div></div>
+          </div>
+        </div>
+
+        <!-- WhatsApp 2 -->
+        <div class="whatsapp-card">
+          <div class="whatsapp-header">
+            <img class="whatsapp-avatar" src="https://media.inlead.cloud/uploads/29956/2025-09-12/xs-z1TNC-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-2025-09-12t022658763.png" alt="Mariana">
+            <div>
+              <div class="whatsapp-name">Mariana López</div>
+              <div class="whatsapp-status">online</div>
+            </div>
+          </div>
+          <div class="whatsapp-body">
+            <div class="whatsapp-msg">Buenos días Dra<div class="whatsapp-time">08:54</div></div>
+            <div class="whatsapp-msg">Hacía mucho tiempo que no sabía lo que era mirarme al espejo y gustarme de lo que veía. En pocos días con el protocolo ya tuve más resultados que en meses intentando seguir dietas estrictas y hacer ejercicio. ¡Gracias de corazón! 🥰 ❤️<div class="whatsapp-time">08:55</div></div>
+          </div>
+        </div>
+
+        <button class="cta-btn" onclick="nextStep(21)">Generar mi protocolo personalizado</button>
+
+        <div class="before-after">
+          <img src="https://media.inlead.cloud/uploads/29956/2025-09-12/lg-bMYUY-lg-fhcxt-istockphoto-1372798207-612x612.jpg" alt="Antes y después">
+        </div>
+      </div>
+
+      <!-- STEP 21: Resultado diagnóstico -->
+      <div class="step" id="step21">
+        <div class="quiz-title">Resultado de tu diagnóstico 🧪</div>
+        <div class="quiz-subtitle">Según tus respuestas y síntomas:</div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:flex-start;">
+          <div>
+            <img src="https://media.inlead.cloud/uploads/29956/2025-07-01/md-SJfnl-guia-de-movilidad-perfecta-recupera-la-ligereza-y-flexibilidad-de-un-nino-31.png" alt="Intestino inflamado" style="width:100%; border-radius:12px; display:block;">
+          </div>
+          <div>
+            <div class="alert-card">
+              ⚠️ Detectamos una <strong><u>inflamación avanzada</u></strong> en tu intestino que está afectando bruscamente tu metabolismo.
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card red">
+            <div class="stat-bar-wrap">
+              <div class="stat-bar red" style="height:52px;"></div>
+            </div>
+            <div class="stat-pct red">87%</div>
+            <div class="stat-label">Inflamación en tu sistema digestivo</div>
+            <div class="stat-sublabel red">Aumento de peso inexplicable y dificultad para adelgazar</div>
+          </div>
+          <div class="stat-card yellow">
+            <div class="stat-bar-wrap">
+              <div class="stat-bar yellow" style="height:43px;"></div>
+            </div>
+            <div class="stat-pct yellow">72%</div>
+            <div class="stat-label">Problemas más allá de la estética</div>
+            <div class="stat-sublabel">Propensión a enfermedades autoinmunes</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-bar-wrap">
+              <div class="stat-bar green" style="height:59px;"></div>
+            </div>
+            <div class="stat-pct green">98%</div>
+            <div class="stat-label">Probabilidad real de eliminar la inflamación con el Protocolo Natural Intestino Activo.</div>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-icon">📅</div>
+          <div>
+            <div class="result-text">Tiempo estimado para eliminar la inflamación y recuperar tu metabolismo:</div>
+            <div class="result-highlight">¡De 3 a 4 días!</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:center;">
+          <div class="curcuma-card">
+            La desinflamación se logrará primero a través de un té de cúrcuma combinado con un ingrediente secreto, económico y fácil de encontrar en cualquier mercado.
+          </div>
+          <div>
+            <img src="https://media.inlead.cloud/uploads/37189/2025-09-15/md-JZ5Ey-1.jpg" alt="Cúrcuma" style="width:100%; border-radius:12px; display:block;">
+          </div>
+        </div>
+
+        <button class="cta-btn" onclick="nextStep(22)">Ahora genera tu protocolo de tratamiento</button>
+      </div>
+
+      <!-- STEP 22: VSL -->
+      <div class="step" id="step22">
+        <div class="vsl-title">MIRA EL RESULTADO EN EL VIDEO DE ABAJO 👇</div>
+        <div class="video-wrap">
+          <iframe
+            src="https://scripts.converteai.net/3d6b5245-cb3d-4784-a1b1-6c0489077d72/players/691f723e6d14c557287d64b4/v4/embed.html"
+            allow="autoplay; fullscreen"
+            allowfullscreen
+            frameborder="0">
+          </iframe>
+        </div>
+        <div class="live-counter">
+          <div class="live-dot"></div>
+          ¡347 PERSONAS VIENDO AHORA MISMO!
+        </div>
+        <div class="media-logos">
+          <img src="https://media.inlead.cloud/uploads/29956/2025-08-24/lg-0MlwB-design-sem-nome-14.png" alt="Medios de comunicación">
+        </div>
+      </div>
+
+    </div><!-- /stepsContainer -->
+  </div><!-- /quiz-container -->
+</div><!-- /page-wrapper -->
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 22;
+  const stepHistory = [1];
+
+  const progressMap = {
+    1: 4, 2: 9, 3: 14, 4: 18, 5: 23, 6: 27, 7: 32, 8: 36, 9: 41,
+    10: 45, 11: 50, 12: 55, 13: 59, 14: 64, 15: 68, 16: 73, 17: 77,
+    18: 82, 19: 86, 20: 91, 21: 95, 22: 100
+  };
+
+  function nextStep(stepNum) {
+    const current = document.getElementById('step' + currentStep);
+    const next = document.getElementById('step' + stepNum);
+    if (!next) return;
+
+    current.classList.remove('active');
+    next.classList.add('active', 'fade-in');
+
+    setTimeout(() => next.classList.remove('fade-in'), 400);
+
+    stepHistory.push(stepNum);
+    currentStep = stepNum;
+
+    // Update progress
+    const pct = progressMap[stepNum] || Math.round((stepNum / totalSteps) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+
+    // Show/hide back button
+    document.getElementById('backBtn').style.display = stepHistory.length > 1 ? 'block' : 'none';
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goBack() {
+    if (stepHistory.length <= 1) return;
+    stepHistory.pop();
+    const prevStep = stepHistory[stepHistory.length - 1];
+
+    const current = document.getElementById('step' + currentStep);
+    current.classList.remove('active');
+
+    const prev = document.getElementById('step' + prevStep);
+    prev.classList.add('active');
+
+    currentStep = prevStep;
+
+    const pct = progressMap[prevStep] || Math.round((prevStep / totalSteps) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+
+    document.getElementById('backBtn').style.display = stepHistory.length > 1 ? 'block' : 'none';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleCheckbox(btn) {
+    btn.classList.toggle('selected');
+    const checkBox = btn.querySelector('.check-box');
+    if (checkBox) {
+      checkBox.textContent = btn.classList.contains('selected') ? '✓' : '';
+    }
+  }
+</script>
+</body>
+</html>
