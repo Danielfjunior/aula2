@@ -622,6 +622,55 @@
     }
     .media-logos img { width: 100%; max-width: 440px; display: block; }
 
+    /* Checkout CTA */
+    .checkout-cta-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      padding: 16px 0 4px;
+      border-top: 1px dashed rgba(34,197,94,0.3);
+    }
+    .checkout-cta-subtitle {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #14532D;
+      text-align: center;
+      margin: 0;
+    }
+    .checkout-cta-btn {
+      display: block;
+      width: 100%;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      padding: 18px 20px;
+      border-radius: 15px;
+      border: 2px dashed rgba(255,255,255,0.5);
+      box-shadow: 0 4px 16px rgba(34,197,94,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+      animation: pulse-cta 1.8s infinite;
+    }
+    .checkout-cta-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 22px rgba(34,197,94,0.5);
+    }
+    @keyframes pulse-cta {
+      0%, 100% { box-shadow: 0 4px 16px rgba(34,197,94,0.35); }
+      50% { box-shadow: 0 4px 28px rgba(34,197,94,0.65); }
+    }
+    .checkout-cta-guarantee {
+      font-size: 0.78rem;
+      color: #6B7280;
+      text-align: center;
+      margin: 0;
+    }
+
     /* Video container */
     .video-wrap {
       width: 100%;
@@ -1269,6 +1318,16 @@
         <div class="media-logos">
           <img src="https://media.inlead.cloud/uploads/29956/2025-08-24/lg-0MlwB-design-sem-nome-14.png" alt="Medios de comunicación">
         </div>
+
+        <!-- BOTÃO CTA CHECKOUT -->
+        <div class="checkout-cta-wrap">
+          <p class="checkout-cta-subtitle">¿Lista para transformar tu salud intestinal?</p>
+          <a href="SEU_LINK_DE_CHECKOUT_AQUI" class="checkout-cta-btn">
+            🛒 ¡Quiero adquirir mi protocolo ahora!
+          </a>
+          <p class="checkout-cta-guarantee">🔒 Compra 100% segura &nbsp;·&nbsp; ✅ Garantía de 7 días</p>
+        </div>
+
       </div>
 
     </div><!-- /stepsContainer -->
